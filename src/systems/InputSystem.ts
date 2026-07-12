@@ -4,6 +4,7 @@ import { EventBus, EventType } from '../core/EventBus';
 import { RenderableStorage } from '../components/RenderableComponent';
 import { InteractableComponent } from '../components/InteractableComponent';
 import { TransformComponent } from '../components/TransformComponent';
+import { CardTag, CardSlotTag } from '../components/CardComponents';
 import { NetworkClient } from '../core/NetworkClient';
 import { MessageType } from '../core/NetworkProtocol';
 
@@ -20,6 +21,9 @@ export class InputInteractionSystem {
   private dragOffset = new Vector3();
   private intersectionPoint = new Vector3();
 
+  private hoveredEntity: number | null = null;
+  private currentWorld: IWorld | null = null;
+
   constructor(
     private camera: PerspectiveCamera,
     private eventBus: EventBus,
@@ -33,6 +37,7 @@ export class InputInteractionSystem {
     this.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this));
     this.canvas.addEventListener('pointermove', this.onPointerMove.bind(this));
     this.canvas.addEventListener('pointerup', this.onPointerUp.bind(this));
+    window.addEventListener('keydown', this.onKeyDown.bind(this));
   }
 
   private updateMouse(event: PointerEvent): void {
@@ -58,11 +63,34 @@ export class InputInteractionSystem {
     this.justReleased = true;
   }
 
+  private onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'r' && this.hoveredEntity !== null && this.currentWorld !== null) {
+      if (
+        hasComponent(this.currentWorld, CardSlotTag, this.hoveredEntity) || 
+        hasComponent(this.currentWorld, CardTag, this.hoveredEntity)
+      ) {
+        this.networkClient.sendAction(MessageType.CLIENT_SHUFFLE_SLOT, { eid: this.hoveredEntity });
+      }
+    }
+  }
+
   public update(world: IWorld, _dt: number): void {
+    this.currentWorld = world;
     this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.updateHoveredEntity();
     if (this.justPressed) this.handleDragStart(world);
     if (this.isMouseDown && this.draggedEntity !== null) this.handleDragMove();
     if (this.justReleased) this.handleDragRelease();
+  }
+
+  private updateHoveredEntity(): void {
+    const meshes = Array.from(RenderableStorage.values());
+    const hits = this.raycaster.intersectObjects(meshes, false);
+    if (hits.length > 0 && hits[0].object.userData.entityId !== undefined) {
+      this.hoveredEntity = hits[0].object.userData.entityId;
+    } else {
+      this.hoveredEntity = null;
+    }
   }
 
   private handleDragStart(world: IWorld): void {

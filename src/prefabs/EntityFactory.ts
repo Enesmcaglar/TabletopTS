@@ -1,22 +1,23 @@
-import { Scene, BoxGeometry, MeshStandardMaterial, Mesh, BufferGeometry, Material } from 'three';
+import { Scene, BoxGeometry, MeshStandardMaterial, Mesh, BufferGeometry, Material, PlaneGeometry, DoubleSide } from 'three';
 import { addEntity, addComponent } from 'bitecs';
 import { GameWorld } from '../core/World';
 import { TransformComponent } from '../components/TransformComponent';
 import { RenderableTag, RenderableStorage } from '../components/RenderableComponent';
 import { InteractableComponent } from '../components/InteractableComponent';
+import { CardTag, CardSlotTag } from '../components/CardComponents';
 import { EntityId } from '../core/types';
 
 export function createClientTable(game: GameWorld, scene: Scene) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 1, y: 0.5, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(2, 0.5, 2), new MeshStandardMaterial({ color: 0x5c4033 }));
+  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 0x5c4033 }));
   addRenderable(game, eid, mesh);
 }
 
 export function createClientBox(game: GameWorld, scene: Scene, color: number) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(1, 1, 1), new MeshStandardMaterial({ color }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color }));
   addRenderable(game, eid, mesh);
   addComponent(game.world, InteractableComponent, eid);
 }
@@ -24,12 +25,26 @@ export function createClientBox(game: GameWorld, scene: Scene, color: number) {
 export function createClientCard(game: GameWorld, scene: Scene, color: number) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(1.26, 0.02, 1.76), new MeshStandardMaterial({ color }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color }));
   addRenderable(game, eid, mesh);
   addComponent(game.world, InteractableComponent, eid);
+  addComponent(game.world, CardTag, eid);
 }
 
-function addTransform(game: GameWorld, eid: EntityId, scale: {x: number, y: number, z: number}) {
+export function createClientCardSlot(game: GameWorld, scene: Scene) {
+  const eid = addEntity(game.world);
+  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+
+  const geo = new PlaneGeometry(2, 2);
+  geo.rotateX(-Math.PI / 2); // Lay flat on table
+  const mat = new MeshStandardMaterial({ color: 0xffff00, transparent: true, opacity: 0.3, side: DoubleSide });
+  const mesh = createMesh(eid, scene, geo, mat);
+
+  addRenderable(game, eid, mesh);
+  addComponent(game.world, CardSlotTag, eid);
+}
+
+function addTransform(game: GameWorld, eid: EntityId, scale: { x: number, y: number, z: number }) {
   addComponent(game.world, TransformComponent, eid);
   TransformComponent.scale.x[eid] = scale.x;
   TransformComponent.scale.y[eid] = scale.y;

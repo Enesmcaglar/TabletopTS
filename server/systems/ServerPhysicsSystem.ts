@@ -3,6 +3,7 @@ import { World as PhysicsWorld, RigidBody } from '@dimforge/rapier3d-compat';
 import { TransformComponent } from '../../src/components/TransformComponent';
 import { PhysicsBodyTag, PhysicsBodyStorage } from '../../src/components/PhysicsBodyComponent';
 import { InteractableComponent } from '../../src/components/InteractableComponent';
+import { SlottedCardStorage } from '../../src/components/CardComponents';
 import { EntityId } from '../../src/core/types';
 
 const physicsQuery = defineQuery([TransformComponent, PhysicsBodyTag]);
@@ -26,7 +27,11 @@ export class ServerPhysicsSystem {
         this.disablePhysics(body);
         this.syncTransformToBody(eid, body);
       } else if (!body.isEnabled()) {
-        this.enablePhysics(body);
+        if (!SlottedCardStorage.has(eid)) {
+          this.enablePhysics(body);
+        } else {
+          this.syncTransformToBody(eid, body); // Keep kinematic sync for stacked cards
+        }
       }
     }
   }

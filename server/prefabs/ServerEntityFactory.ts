@@ -4,18 +4,19 @@ import { GameWorld } from '../../src/core/World';
 import { TransformComponent } from '../../src/components/TransformComponent';
 import { PhysicsBodyTag, PhysicsBodyStorage } from '../../src/components/PhysicsBodyComponent';
 import { InteractableComponent } from '../../src/components/InteractableComponent';
+import { CardTag, CardSlotTag, CardSlotStorage } from '../../src/components/CardComponents';
 import { Position, EntityId } from '../../src/core/types';
 
 export function createServerTable(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 10, y: 0.5, z: 10 });
-  const colDesc = RAPIER.ColliderDesc.cuboid(10.0, 0.25, 10.0);
+  addTransform(game, eid, { x: 5, y: 0.1, z: 5 });
+  const colDesc = RAPIER.ColliderDesc.cuboid(5, 0.1, 5);
   addFixedBody(game, phys, eid, pos, colDesc);
 }
 
 export function createServerBox(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  addTransform(game, eid, { x: 0.5, y: 0.5, z: 0.5 });
   const colDesc = RAPIER.ColliderDesc.cuboid(0.5, 0.5, 0.5);
   addDynamicBody(game, phys, eid, pos, colDesc);
   addComponent(game.world, InteractableComponent, eid);
@@ -23,10 +24,21 @@ export function createServerBox(game: GameWorld, phys: RAPIER.World, pos: Positi
 
 export function createServerCard(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  addTransform(game, eid, { x: 0.63, y: 0.01, z: 0.88 });
   const colDesc = RAPIER.ColliderDesc.cuboid(0.63, 0.01, 0.88);
   addDynamicBody(game, phys, eid, pos, colDesc);
   addComponent(game.world, InteractableComponent, eid);
+  addComponent(game.world, CardTag, eid);
+}
+
+export function createServerCardSlot(game: GameWorld, phys: RAPIER.World, pos: Position) {
+  const eid = addEntity(game.world);
+  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  TransformComponent.position.x[eid] = pos.x;
+  TransformComponent.position.y[eid] = pos.y;
+  TransformComponent.position.z[eid] = pos.z;
+  addComponent(game.world, CardSlotTag, eid);
+  CardSlotStorage.set(eid, []);
 }
 
 function addTransform(game: GameWorld, eid: EntityId, scale: {x: number, y: number, z: number}) {
