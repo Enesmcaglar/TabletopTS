@@ -30,11 +30,14 @@ function setupServerSystems(world: GameWorld, physics: RAPIER.World) {
 
 function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   createServerTable(world, physics, { x: 0, y: 0, z: 0 });
-  for (let i = 0; i < 17; i++) {
-    createServerCard(world, physics, { x: 0, y: 2, z: 1 });
-  }
   createServerBox(world, physics, { x: -2, y: 3, z: 0 });
   createServerBox(world, physics, { x: 2, y: 5, z: 0 });
+  
+  // Match client entity creation loop exactly
+  for (let i = 0; i < 17; i++) {
+    // Drop them in a slight staggered stack so they tumble
+    createServerCard(world, physics, { x: 0, y: 2 + i * 0.5, z: 1 });
+  }
 }
 
 function setupWebSockets(wss: WebSocketServer, world: GameWorld) {

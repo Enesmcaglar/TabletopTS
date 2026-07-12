@@ -21,10 +21,10 @@ export function createClientBox(game: GameWorld, scene: Scene, color: number) {
   addComponent(game.world, InteractableComponent, eid);
 }
 
-export function createClientCard(game: GameWorld, scene: Scene) {
+export function createClientCard(game: GameWorld, scene: Scene, color: number) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(1.26, 0.02, 1.76), new MeshStandardMaterial({ color: 0xffffff }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(1.26, 0.02, 1.76), new MeshStandardMaterial({ color }));
   addRenderable(game, eid, mesh);
   addComponent(game.world, InteractableComponent, eid);
 }

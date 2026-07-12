@@ -73,11 +73,14 @@ function setupSystems(world: GameWorld, renderer: WebGLRenderer, scene: Scene, c
 function spawnEntities(world: GameWorld, scene: Scene): void {
   // We MUST spawn entities in the exact same order as the server so their EIDs match perfectly.
   createClientTable(world, scene);
-  for (let i = 0; i < 17; i++) {
-    createClientCard(world, scene);
-  }
   createClientBox(world, scene, 0xff0000);
   createClientBox(world, scene, 0x0000ff);
+  
+  // Predictable pseudorandom colors for all clients
+  const colors = [0xff595e, 0xffca3a, 0x8ac926, 0x1982c4, 0x6a4c93, 0xf15bb5, 0x00f5d4, 0xfee440, 0x9b5de5, 0x00bbf9, 0xf94144, 0xf3722c, 0xf8961e, 0xf9c74f, 0x90be6d, 0x43aa8b, 0x577590];
+  for (let i = 0; i < 17; i++) {
+    createClientCard(world, scene, colors[i]);
+  }
 }
 
 function startGameLoop(world: GameWorld, controls: OrbitControls): void {
