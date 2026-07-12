@@ -15,12 +15,12 @@ export class NetworkSyncSystem {
     for (const transform of state) {
       const eid = transform.eid;
       
-      // Do not sync transform from server if we are actively dragging it
-      if (InteractableComponent.isDragged[eid] === 1) continue;
-
-      TransformComponent.position.x[eid] = transform.pos.x;
-      TransformComponent.position.y[eid] = transform.pos.y;
-      TransformComponent.position.z[eid] = transform.pos.z;
+      // Do not sync position from server if we are actively dragging it (client predicts position)
+      if (InteractableComponent.isDragged[eid] !== 1) {
+        TransformComponent.position.x[eid] = transform.pos.x;
+        TransformComponent.position.y[eid] = transform.pos.y;
+        TransformComponent.position.z[eid] = transform.pos.z;
+      }
 
       TransformComponent.rotation.x[eid] = transform.rot.x;
       TransformComponent.rotation.y[eid] = transform.rot.y;
