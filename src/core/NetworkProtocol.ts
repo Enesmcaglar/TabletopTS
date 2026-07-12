@@ -12,6 +12,7 @@ export interface TransformState {
   eid: EntityId;
   pos: Position;
   rot: Rotation;
+  scl: { x: number, y: number, z: number };
 }
 
 export interface StateUpdatePayload {

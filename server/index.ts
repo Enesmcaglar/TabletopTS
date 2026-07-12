@@ -90,7 +90,8 @@ function buildStatePayload(world: GameWorld): StateUpdatePayload {
     transforms.push({
       eid,
       pos: { x: TransformComponent.position.x[eid], y: TransformComponent.position.y[eid], z: TransformComponent.position.z[eid] },
-      rot: { x: TransformComponent.rotation.x[eid], y: TransformComponent.rotation.y[eid], z: TransformComponent.rotation.z[eid], w: TransformComponent.rotation.w[eid] }
+      rot: { x: TransformComponent.rotation.x[eid], y: TransformComponent.rotation.y[eid], z: TransformComponent.rotation.z[eid], w: TransformComponent.rotation.w[eid] },
+      scl: { x: TransformComponent.scale.x[eid], y: TransformComponent.scale.y[eid], z: TransformComponent.scale.z[eid] }
     });
   }
   return { transforms };

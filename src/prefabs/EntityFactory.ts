@@ -8,8 +8,8 @@ import { EntityId } from '../core/types';
 
 export function createClientTable(game: GameWorld, scene: Scene) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 10, y: 0.5, z: 6 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(10, 0.5, 6), new MeshStandardMaterial({ color: 0x5c4033 }));
+  addTransform(game, eid, { x: 1, y: 0.5, z: 1 });
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 0.5, 2), new MeshStandardMaterial({ color: 0x5c4033 }));
   addRenderable(game, eid, mesh);
 }
 
