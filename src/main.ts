@@ -73,9 +73,11 @@ function setupSystems(world: GameWorld, renderer: WebGLRenderer, scene: Scene, c
 function spawnEntities(world: GameWorld, scene: Scene): void {
   // We MUST spawn entities in the exact same order as the server so their EIDs match perfectly.
   createClientTable(world, scene);
+  for (let i = 0; i < 17; i++) {
+    createClientCard(world, scene);
+  }
   createClientBox(world, scene, 0xff0000);
   createClientBox(world, scene, 0x0000ff);
-  createClientCard(world, scene);
 }
 
 function startGameLoop(world: GameWorld, controls: OrbitControls): void {

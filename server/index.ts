@@ -15,11 +15,11 @@ async function initServer() {
   const wss = new WebSocketServer({ port: 8080 });
   const physicsWorld = new RAPIER.World({ x: 0.0, y: -9.81, z: 0.0 });
   const gameWorld = new GameWorld();
-  
+
   setupServerSystems(gameWorld, physicsWorld);
   spawnServerEntities(gameWorld, physicsWorld);
   setupWebSockets(wss, gameWorld);
-  
+
   startGameLoop(gameWorld, wss);
 }
 
@@ -30,9 +30,11 @@ function setupServerSystems(world: GameWorld, physics: RAPIER.World) {
 
 function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   createServerTable(world, physics, { x: 0, y: 0, z: 0 });
+  for (let i = 0; i < 17; i++) {
+    createServerCard(world, physics, { x: 0, y: 2, z: 1 });
+  }
   createServerBox(world, physics, { x: -2, y: 3, z: 0 });
   createServerBox(world, physics, { x: 2, y: 5, z: 0 });
-  createServerCard(world, physics, { x: 0, y: 2, z: 1 });
 }
 
 function setupWebSockets(wss: WebSocketServer, world: GameWorld) {
@@ -50,7 +52,7 @@ function sendFullState(ws: WebSocket, world: GameWorld) {
 function handleClientMessage(data: import('ws').RawData, world: GameWorld) {
   const msg = JSON.parse(data.toString()) as NetworkMessage;
   const payload = msg.payload as ClientActionPayload;
-  
+
   if (msg.type === MessageType.CLIENT_GRAB) {
     InteractableComponent.isDragged[payload.eid] = 1;
   } else if (msg.type === MessageType.CLIENT_RELEASE) {
