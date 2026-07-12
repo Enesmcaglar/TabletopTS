@@ -1,14 +1,13 @@
 import { WebGLRenderer, Scene, PerspectiveCamera, DirectionalLight, AmbientLight } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import RAPIER from '@dimforge/rapier3d-compat';
 import { GameWorld } from './core/World';
+import { NetworkClient } from './core/NetworkClient';
 import { RenderSystem } from './systems/RenderSystem';
-import { PhysicsSystem } from './systems/PhysicsSystem';
+import { NetworkSyncSystem } from './systems/NetworkSyncSystem';
 import { InputInteractionSystem } from './systems/InputSystem';
-import { createTable, createBox, createCard } from './prefabs/EntityFactory';
+import { createClientTable, createClientBox, createClientCard } from './prefabs/EntityFactory';
 
 async function init() {
-  await RAPIER.init();
   const canvas = setupCanvas();
   const renderer = setupRenderer(canvas);
   const scene = new Scene();
@@ -16,11 +15,11 @@ async function init() {
   const controls = setupControls(camera, renderer);
   setupLighting(scene);
 
-  const physicsWorld = new RAPIER.World({ x: 0.0, y: -9.81, z: 0.0 });
   const gameWorld = new GameWorld();
+  const networkClient = new NetworkClient(gameWorld.eventBus);
 
-  setupSystems(gameWorld, renderer, scene, camera, physicsWorld, canvas);
-  spawnEntities(gameWorld, scene, physicsWorld);
+  setupSystems(gameWorld, renderer, scene, camera, networkClient, canvas);
+  spawnEntities(gameWorld, scene);
   startGameLoop(gameWorld, controls);
 }
 
@@ -61,21 +60,22 @@ function setupLighting(scene: Scene): void {
   scene.add(dirLight);
 }
 
-function setupSystems(world: GameWorld, renderer: WebGLRenderer, scene: Scene, camera: PerspectiveCamera, physics: RAPIER.World, canvas: HTMLCanvasElement): void {
+function setupSystems(world: GameWorld, renderer: WebGLRenderer, scene: Scene, camera: PerspectiveCamera, netClient: NetworkClient, canvas: HTMLCanvasElement): void {
   const renderSys = new RenderSystem(renderer, scene, camera);
-  const physicsSys = new PhysicsSystem(physics);
-  const inputSys = new InputInteractionSystem(camera, world.eventBus, canvas);
+  const syncSys = new NetworkSyncSystem(netClient);
+  const inputSys = new InputInteractionSystem(camera, world.eventBus, canvas, netClient);
 
-  world.addSystem(physicsSys.update.bind(physicsSys));
+  world.addSystem(syncSys.update.bind(syncSys));
   world.addSystem(inputSys.update.bind(inputSys));
   world.addSystem(renderSys.update.bind(renderSys));
 }
 
-function spawnEntities(world: GameWorld, scene: Scene, physics: RAPIER.World): void {
-  createTable(world, scene, physics, { x: 0, y: 0, z: 0 });
-  createBox(world, scene, physics, { x: -2, y: 3, z: 0 }, 0xff0000);
-  createBox(world, scene, physics, { x: 2, y: 5, z: 0 }, 0x0000ff);
-  createCard(world, scene, physics, { x: 0, y: 2, z: 1 });
+function spawnEntities(world: GameWorld, scene: Scene): void {
+  // We MUST spawn entities in the exact same order as the server so their EIDs match perfectly.
+  createClientTable(world, scene);
+  createClientBox(world, scene, 0xff0000);
+  createClientBox(world, scene, 0x0000ff);
+  createClientCard(world, scene);
 }
 
 function startGameLoop(world: GameWorld, controls: OrbitControls): void {

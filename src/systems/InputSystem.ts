@@ -4,6 +4,8 @@ import { EventBus, EventType } from '../core/EventBus';
 import { RenderableStorage } from '../components/RenderableComponent';
 import { InteractableComponent } from '../components/InteractableComponent';
 import { TransformComponent } from '../components/TransformComponent';
+import { NetworkClient } from '../core/NetworkClient';
+import { MessageType } from '../core/NetworkProtocol';
 
 export class InputInteractionSystem {
   private raycaster = new Raycaster();
@@ -21,7 +23,8 @@ export class InputInteractionSystem {
   constructor(
     private camera: PerspectiveCamera,
     private eventBus: EventBus,
-    private canvas: HTMLCanvasElement
+    private canvas: HTMLCanvasElement,
+    private networkClient: NetworkClient
   ) {
     this.setupListeners();
   }
@@ -86,6 +89,7 @@ export class InputInteractionSystem {
     TransformComponent.rotation.z[eid] = 0;
     TransformComponent.rotation.w[eid] = 1;
 
+    this.networkClient.sendAction(MessageType.CLIENT_GRAB, { eid });
     this.eventBus.publish(EventType.ENTITY_DRAGGED, { eid });
   }
 
@@ -93,17 +97,24 @@ export class InputInteractionSystem {
     this.raycaster.ray.intersectPlane(this.dragPlane, this.intersectionPoint);
     if (this.intersectionPoint && this.draggedEntity !== null) {
       const newPos = this.intersectionPoint.sub(this.dragOffset);
-      TransformComponent.position.x[this.draggedEntity] = newPos.x;
-      TransformComponent.position.y[this.draggedEntity] = newPos.y;
-      TransformComponent.position.z[this.draggedEntity] = newPos.z;
+      const eid = this.draggedEntity;
+      TransformComponent.position.x[eid] = newPos.x;
+      TransformComponent.position.y[eid] = newPos.y;
+      TransformComponent.position.z[eid] = newPos.z;
+      
+      this.networkClient.sendAction(MessageType.CLIENT_MOVE, { 
+        eid, pos: { x: newPos.x, y: newPos.y, z: newPos.z } 
+      });
     }
   }
 
   private handleDragRelease(): void {
     this.justReleased = false;
     if (this.draggedEntity !== null) {
-      InteractableComponent.isDragged[this.draggedEntity] = 0;
-      this.eventBus.publish(EventType.ENTITY_RELEASED, { eid: this.draggedEntity });
+      const eid = this.draggedEntity;
+      InteractableComponent.isDragged[eid] = 0;
+      this.networkClient.sendAction(MessageType.CLIENT_RELEASE, { eid });
+      this.eventBus.publish(EventType.ENTITY_RELEASED, { eid });
       this.draggedEntity = null;
     }
   }
