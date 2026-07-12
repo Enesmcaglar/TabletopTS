@@ -10,14 +10,14 @@ import { EntityId } from '../core/types';
 export function createClientTable(game: GameWorld, scene: Scene) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 0x5c4033 }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 0x5c4033, roughness: 0.8, metalness: 0.1 }));
   addRenderable(game, eid, mesh);
 }
 
 export function createClientBox(game: GameWorld, scene: Scene, color: number) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.2 }));
   addRenderable(game, eid, mesh);
   addComponent(game.world, InteractableComponent, eid);
 }
@@ -25,7 +25,7 @@ export function createClientBox(game: GameWorld, scene: Scene, color: number) {
 export function createClientCard(game: GameWorld, scene: Scene, color: number) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color }));
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color, roughness: 0.2, metalness: 0.1 }));
   addRenderable(game, eid, mesh);
   addComponent(game.world, InteractableComponent, eid);
   addComponent(game.world, CardTag, eid);
@@ -54,6 +54,8 @@ function addTransform(game: GameWorld, eid: EntityId, scale: { x: number, y: num
 function createMesh(eid: EntityId, scene: Scene, geo: BufferGeometry, mat: Material): Mesh {
   const mesh = new Mesh(geo, mat);
   mesh.userData.entityId = eid;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   scene.add(mesh);
   return mesh;
 }

@@ -1,5 +1,6 @@
-import { WebGLRenderer, Scene, PerspectiveCamera, DirectionalLight, AmbientLight } from 'three';
+import { WebGLRenderer, Scene, PerspectiveCamera, DirectionalLight, HemisphereLight, Color, PCFSoftShadowMap, ACESFilmicToneMapping, PMREMGenerator } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GameWorld } from './core/World';
 import { NetworkClient } from './core/NetworkClient';
 import { RenderSystem } from './systems/RenderSystem';
@@ -11,8 +12,13 @@ async function init() {
   const canvas = setupCanvas();
   const renderer = setupRenderer(canvas);
   const scene = new Scene();
+  scene.background = new Color(0x87ceeb); // Basic sky blue
   const camera = setupCamera();
   const controls = setupControls(camera, renderer);
+  
+  const pmremGenerator = new PMREMGenerator(renderer);
+  scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+  
   setupLighting(scene);
 
   const gameWorld = new GameWorld();
@@ -32,6 +38,11 @@ function setupCanvas(): HTMLCanvasElement {
 function setupRenderer(canvas: HTMLCanvasElement): WebGLRenderer {
   const renderer = new WebGLRenderer({ canvas, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = PCFSoftShadowMap;
+  renderer.toneMapping = ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
   return renderer;
 }
 
@@ -54,9 +65,22 @@ function setupControls(camera: PerspectiveCamera, renderer: WebGLRenderer): Orbi
 }
 
 function setupLighting(scene: Scene): void {
-  scene.add(new AmbientLight(0xffffff, 0.6));
+  const hemiLight = new HemisphereLight(0xffffff, 0x444444, 0.6);
+  hemiLight.position.set(0, 20, 0);
+  scene.add(hemiLight);
+
   const dirLight = new DirectionalLight(0xffffff, 0.8);
   dirLight.position.set(10, 20, 10);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 2048;
+  dirLight.shadow.mapSize.height = 2048;
+  dirLight.shadow.camera.near = 0.5;
+  dirLight.shadow.camera.far = 50;
+  dirLight.shadow.camera.left = -10;
+  dirLight.shadow.camera.right = 10;
+  dirLight.shadow.camera.top = 10;
+  dirLight.shadow.camera.bottom = -10;
+  dirLight.shadow.bias = -0.0001;
   scene.add(dirLight);
 }
 
