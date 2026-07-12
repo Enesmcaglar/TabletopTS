@@ -42,12 +42,17 @@ function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   createServerTray(world, physics, { x: 0, y: 0.275, z: -3 }, 'fascist');
   for (let i = 0; i < 6; i++) {
     const xPos = -3.6 + (i * 1.45);
-    createServerCardSlot(world, physics, { x: xPos, y: 0.4, z: -3  });
+    createServerCardSlot(world, physics, { x: xPos, y: 0.4, z: -3 });
   }
 
   createServerBox(world, physics, { x: -4, y: 3, z: 0 });
   createServerBox(world, physics, { x: 4, y: 5, z: 0 });
-  
+
+  // Draw Pile
+  createServerCardSlot(world, physics, { x: -6, y: 0.3, z: 3 });
+  // Discard Pile
+  createServerCardSlot(world, physics, { x: 6, y: 0.3, z: 3 });
+
   for (let i = 0; i < 17; i++) {
     createServerCard(world, physics, { x: 0, y: 2 + i * 0.5, z: 0 });
   }

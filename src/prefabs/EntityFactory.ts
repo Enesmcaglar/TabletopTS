@@ -34,8 +34,8 @@ const matsTrayFas = [matSide, matSide, matTrayFasTop, matSide, matSide, matSide]
 
 export function createClientTable(game: GameWorld, scene: Scene) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 16, y: 0.5, z: 12 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(16, 0.5, 12), new MeshStandardMaterial({ color: 0x5c4033, roughness: 0.8, metalness: 0.1 }));
+  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 0x5c4033, roughness: 0.8, metalness: 0.1 }));
   addRenderable(game, eid, mesh);
 }
 

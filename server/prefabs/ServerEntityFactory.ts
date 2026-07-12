@@ -9,8 +9,8 @@ import { Position, EntityId } from '../../src/core/types';
 
 export function createServerTable(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 8, y: 0.25, z: 6 });
-  const colDesc = RAPIER.ColliderDesc.cuboid(8, 0.25, 6);
+  addTransform(game, eid, { x: 14, y: 0.25, z: 14 });
+  const colDesc = RAPIER.ColliderDesc.cuboid(14, 0.25, 14);
   addFixedBody(game, phys, eid, pos, colDesc);
 }
 

@@ -110,6 +110,11 @@ function spawnEntities(world: GameWorld, scene: Scene): void {
   createClientBox(world, scene, 0xff0000);
   createClientBox(world, scene, 0x0000ff);
   
+  // Draw Pile
+  createClientCardSlot(world, scene, true);
+  // Discard Pile
+  createClientCardSlot(world, scene, true);
+
   // Spawn 11 Fascist and 6 Liberal cards in deterministic order to match server EIDs
   for (let i = 0; i < 11; i++) {
     createClientCard(world, scene, 'fascist');
