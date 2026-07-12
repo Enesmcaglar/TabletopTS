@@ -9,8 +9,16 @@ import { Position, EntityId } from '../../src/core/types';
 
 export function createServerTable(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 5, y: 0.1, z: 5 });
-  const colDesc = RAPIER.ColliderDesc.cuboid(5, 0.2, 5);
+  addTransform(game, eid, { x: 8, y: 0.25, z: 6 });
+  const colDesc = RAPIER.ColliderDesc.cuboid(8, 0.25, 6);
+  addFixedBody(game, phys, eid, pos, colDesc);
+}
+
+export function createServerTray(game: GameWorld, phys: RAPIER.World, pos: Position, type: 'liberal' | 'fascist') {
+  const eid = addEntity(game.world);
+  let height = type === "liberal" ? 2 : 2.1;
+  addTransform(game, eid, { x: 2.59 * height, y: 0.025, z: height });
+  const colDesc = RAPIER.ColliderDesc.cuboid(2.59 * height, 0.025, height);
   addFixedBody(game, phys, eid, pos, colDesc);
 }
 
@@ -33,7 +41,7 @@ export function createServerCard(game: GameWorld, phys: RAPIER.World, pos: Posit
 
 export function createServerCardSlot(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 1, y: 1, z: 1 });
+  addTransform(game, eid, { x: 0.63, y: 0.01, z: 0.88 });
   TransformComponent.position.x[eid] = pos.x;
   TransformComponent.position.y[eid] = pos.y;
   TransformComponent.position.z[eid] = pos.z;
@@ -41,7 +49,7 @@ export function createServerCardSlot(game: GameWorld, phys: RAPIER.World, pos: P
   CardSlotStorage.set(eid, []);
 }
 
-function addTransform(game: GameWorld, eid: EntityId, scale: {x: number, y: number, z: number}) {
+function addTransform(game: GameWorld, eid: EntityId, scale: { x: number, y: number, z: number }) {
   addComponent(game.world, TransformComponent, eid);
   TransformComponent.scale.x[eid] = scale.x;
   TransformComponent.scale.y[eid] = scale.y;

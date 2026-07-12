@@ -11,22 +11,40 @@ const textureLoader = new TextureLoader();
 const texBack = textureLoader.load('/assets/board-policy.png');
 const texFascist = textureLoader.load('/assets/board-policy-fascist.png');
 const texLiberal = textureLoader.load('/assets/board-policy-liberal.png');
+const texTrayLib = textureLoader.load('/assets/board-liberal.png');
+const texTrayFas = textureLoader.load('/assets/board-fascist-7-8.png');
+
 texBack.colorSpace = SRGBColorSpace;
 texFascist.colorSpace = SRGBColorSpace;
 texLiberal.colorSpace = SRGBColorSpace;
+texTrayLib.colorSpace = SRGBColorSpace;
+texTrayFas.colorSpace = SRGBColorSpace;
 
 const matBack = new MeshStandardMaterial({ map: texBack, roughness: 0.2, metalness: 0.1 });
 const matFascist = new MeshStandardMaterial({ map: texFascist, roughness: 0.2, metalness: 0.1 });
 const matLiberal = new MeshStandardMaterial({ map: texLiberal, roughness: 0.2, metalness: 0.1 });
+const matTrayLibTop = new MeshStandardMaterial({ map: texTrayLib, roughness: 0.5, metalness: 0.1 });
+const matTrayFasTop = new MeshStandardMaterial({ map: texTrayFas, roughness: 0.5, metalness: 0.1 });
 const matSide = new MeshStandardMaterial({ color: 0x111111, roughness: 0.8, metalness: 0 });
 
 const matsFascist = [matSide, matSide, matBack, matFascist, matSide, matSide];
 const matsLiberal = [matSide, matSide, matBack, matLiberal, matSide, matSide];
+const matsTrayLib = [matSide, matSide, matTrayLibTop, matSide, matSide, matSide];
+const matsTrayFas = [matSide, matSide, matTrayFasTop, matSide, matSide, matSide];
 
 export function createClientTable(game: GameWorld, scene: Scene) {
   const eid = addEntity(game.world);
+  addTransform(game, eid, { x: 16, y: 0.5, z: 12 });
+  const mesh = createMesh(eid, scene, new BoxGeometry(16, 0.5, 12), new MeshStandardMaterial({ color: 0x5c4033, roughness: 0.8, metalness: 0.1 }));
+  addRenderable(game, eid, mesh);
+}
+
+export function createClientTray(game: GameWorld, scene: Scene, type: 'liberal' | 'fascist') {
+  const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
-  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), new MeshStandardMaterial({ color: 0x5c4033, roughness: 0.8, metalness: 0.1 }));
+  const mats = type === 'liberal' ? matsTrayLib : matsTrayFas;
+  
+  const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), mats);
   addRenderable(game, eid, mesh);
 }
 

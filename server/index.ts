@@ -4,7 +4,7 @@ import { defineQuery } from 'bitecs';
 import { GameWorld } from '../src/core/World';
 import { ServerPhysicsSystem } from './systems/ServerPhysicsSystem';
 import { ServerSlotSystem } from './systems/ServerSlotSystem';
-import { createServerTable, createServerBox, createServerCard, createServerCardSlot } from './prefabs/ServerEntityFactory';
+import { createServerTable, createServerBox, createServerCard, createServerCardSlot, createServerTray } from './prefabs/ServerEntityFactory';
 import { TransformComponent } from '../src/components/TransformComponent';
 import { InteractableComponent } from '../src/components/InteractableComponent';
 import { MessageType, NetworkMessage, StateUpdatePayload, ClientActionPayload } from '../src/core/NetworkProtocol';
@@ -33,16 +33,23 @@ function setupServerSystems(world: GameWorld, physicsSys: ServerPhysicsSystem) {
 function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   createServerTable(world, physics, { x: 0, y: 0, z: 0 });
 
-  createServerCardSlot(world, physics, { x: -3, y: 0.15, z: 0 });
-  createServerCardSlot(world, physics, { x: 3, y: 0.15, z: 0 });
+  createServerTray(world, physics, { x: 0, y: 0.275, z: 3 }, 'liberal');
+  for (let i = 0; i < 5; i++) {
+    const xPos = -2.8 + (i * 1.4);
+    createServerCardSlot(world, physics, { x: xPos, y: 0.4, z: 3 });
+  }
 
-  createServerBox(world, physics, { x: -2, y: 3, z: 0 });
-  createServerBox(world, physics, { x: 2, y: 5, z: 0 });
+  createServerTray(world, physics, { x: 0, y: 0.275, z: -3 }, 'fascist');
+  for (let i = 0; i < 6; i++) {
+    const xPos = -3.6 + (i * 1.45);
+    createServerCardSlot(world, physics, { x: xPos, y: 0.4, z: -3  });
+  }
+
+  createServerBox(world, physics, { x: -4, y: 3, z: 0 });
+  createServerBox(world, physics, { x: 4, y: 5, z: 0 });
   
-  // Match client entity creation loop exactly
   for (let i = 0; i < 17; i++) {
-    // Drop them in a slight staggered stack so they tumble
-    createServerCard(world, physics, { x: 0, y: 2 + i * 0.3, z: 1 });
+    createServerCard(world, physics, { x: 0, y: 2 + i * 0.3, z: 0 });
   }
 }
 

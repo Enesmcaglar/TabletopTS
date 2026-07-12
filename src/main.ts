@@ -6,7 +6,7 @@ import { NetworkClient } from './core/NetworkClient';
 import { RenderSystem } from './systems/RenderSystem';
 import { NetworkSyncSystem } from './systems/NetworkSyncSystem';
 import { InputInteractionSystem } from './systems/InputSystem';
-import { createClientTable, createClientBox, createClientCard, createClientCardSlot } from './prefabs/EntityFactory';
+import { createClientTable, createClientBox, createClientCard, createClientCardSlot, createClientTray } from './prefabs/EntityFactory';
 
 async function init() {
   const canvas = setupCanvas();
@@ -97,9 +97,15 @@ function setupSystems(world: GameWorld, renderer: WebGLRenderer, scene: Scene, c
 function spawnEntities(world: GameWorld, scene: Scene): void {
   // We MUST spawn entities in the exact same order as the server so their EIDs match perfectly.
   createClientTable(world, scene);
-  
-  createClientCardSlot(world, scene);
-  createClientCardSlot(world, scene);
+  createClientTray(world, scene, 'liberal');
+  for (let i = 0; i < 5; i++) {
+    createClientCardSlot(world, scene);
+  }
+
+  createClientTray(world, scene, 'fascist');
+  for (let i = 0; i < 6; i++) {
+    createClientCardSlot(world, scene);
+  }
 
   createClientBox(world, scene, 0xff0000);
   createClientBox(world, scene, 0x0000ff);
