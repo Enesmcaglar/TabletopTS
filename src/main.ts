@@ -99,12 +99,12 @@ function spawnEntities(world: GameWorld, scene: Scene): void {
   createClientTable(world, scene);
   createClientTray(world, scene, 'liberal');
   for (let i = 0; i < 5; i++) {
-    createClientCardSlot(world, scene);
+    createClientCardSlot(world, scene, false);
   }
 
   createClientTray(world, scene, 'fascist');
   for (let i = 0; i < 6; i++) {
-    createClientCardSlot(world, scene);
+    createClientCardSlot(world, scene, false);
   }
 
   createClientBox(world, scene, 0xff0000);

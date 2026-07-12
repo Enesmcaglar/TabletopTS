@@ -43,7 +43,7 @@ export function createClientTray(game: GameWorld, scene: Scene, type: 'liberal' 
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
   const mats = type === 'liberal' ? matsTrayLib : matsTrayFas;
-  
+
   const mesh = createMesh(eid, scene, new BoxGeometry(2, 2, 2), mats);
   addRenderable(game, eid, mesh);
 }
@@ -66,16 +66,18 @@ export function createClientCard(game: GameWorld, scene: Scene, type: 'fascist' 
   addComponent(game.world, CardTag, eid);
 }
 
-export function createClientCardSlot(game: GameWorld, scene: Scene) {
+export function createClientCardSlot(game: GameWorld, scene: Scene, isVisible: boolean = false) {
   const eid = addEntity(game.world);
   addTransform(game, eid, { x: 1, y: 1, z: 1 });
 
-  const geo = new PlaneGeometry(2, 2);
-  geo.rotateX(-Math.PI / 2); // Lay flat on table
-  const mat = new MeshStandardMaterial({ color: 0xffff00, transparent: true, opacity: 0.3, side: DoubleSide });
-  const mesh = createMesh(eid, scene, geo, mat);
+  if (isVisible) {
+    const geo = new PlaneGeometry(2, 2);
+    geo.rotateX(-Math.PI / 2); // Lay flat on table
+    const mat = new MeshStandardMaterial({ color: 0xffff00, transparent: true, opacity: 0.3, side: DoubleSide });
+    const mesh = createMesh(eid, scene, geo, mat);
 
-  addRenderable(game, eid, mesh);
+    addRenderable(game, eid, mesh);
+  }
   addComponent(game.world, CardSlotTag, eid);
 }
 
