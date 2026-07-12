@@ -114,11 +114,6 @@ export class InputInteractionSystem {
     InteractableComponent.isDragged[eid] = 1;
     this.dragPlane.setComponents(0, 1, 0, -(hit.point.y + 0.5));
     this.dragOffset.copy(hit.point).sub(hit.object.position);
-    
-    TransformComponent.rotation.x[eid] = 0;
-    TransformComponent.rotation.y[eid] = 0;
-    TransformComponent.rotation.z[eid] = 0;
-    TransformComponent.rotation.w[eid] = 1;
 
     this.networkClient.sendAction(MessageType.CLIENT_GRAB, { eid });
     this.eventBus.publish(EventType.ENTITY_DRAGGED, { eid });
