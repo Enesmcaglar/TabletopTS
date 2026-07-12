@@ -82,10 +82,14 @@ export class ServerSlotSystem {
       TransformComponent.position.y[cardEid] = baseY + (i * CARD_THICKNESS);
       TransformComponent.position.z[cardEid] = baseZ;
       
+      const rx = TransformComponent.rotation.x[cardEid];
+      const rz = TransformComponent.rotation.z[cardEid];
+      const isUpsideDown = (1 - 2 * (rx * rx + rz * rz)) < 0;
+      
       TransformComponent.rotation.x[cardEid] = 0;
       TransformComponent.rotation.y[cardEid] = 0;
-      TransformComponent.rotation.z[cardEid] = 0;
-      TransformComponent.rotation.w[cardEid] = 1;
+      TransformComponent.rotation.z[cardEid] = isUpsideDown ? 1 : 0;
+      TransformComponent.rotation.w[cardEid] = isUpsideDown ? 0 : 1;
     }
   }
 

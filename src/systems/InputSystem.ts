@@ -64,12 +64,15 @@ export class InputInteractionSystem {
   }
 
   private onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'r' && this.hoveredEntity !== null && this.currentWorld !== null) {
-      if (
-        hasComponent(this.currentWorld, CardSlotTag, this.hoveredEntity) || 
-        hasComponent(this.currentWorld, CardTag, this.hoveredEntity)
-      ) {
+    if (this.hoveredEntity === null || this.currentWorld === null) return;
+
+    if (event.key === 'r') {
+      if (hasComponent(this.currentWorld, CardSlotTag, this.hoveredEntity) || hasComponent(this.currentWorld, CardTag, this.hoveredEntity)) {
         this.networkClient.sendAction(MessageType.CLIENT_SHUFFLE_SLOT, { eid: this.hoveredEntity });
+      }
+    } else if (event.key === 'f') {
+      if (hasComponent(this.currentWorld, CardTag, this.hoveredEntity)) {
+        this.networkClient.sendAction(MessageType.CLIENT_FLIP_CARD, { eid: this.hoveredEntity });
       }
     }
   }

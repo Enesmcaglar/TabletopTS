@@ -17,16 +17,16 @@ async function initServer() {
   const physicsWorld = new RAPIER.World({ x: 0.0, y: -9.81, z: 0.0 });
   const gameWorld = new GameWorld();
   const slotSystem = new ServerSlotSystem();
+  const physicsSys = new ServerPhysicsSystem(physicsWorld);
 
-  setupServerSystems(gameWorld, physicsWorld);
+  setupServerSystems(gameWorld, physicsSys);
   spawnServerEntities(gameWorld, physicsWorld);
-  setupWebSockets(wss, gameWorld, slotSystem);
+  setupWebSockets(wss, gameWorld, slotSystem, physicsSys);
 
   startGameLoop(gameWorld, wss);
 }
 
-function setupServerSystems(world: GameWorld, physics: RAPIER.World) {
-  const physicsSys = new ServerPhysicsSystem(physics);
+function setupServerSystems(world: GameWorld, physicsSys: ServerPhysicsSystem) {
   world.addSystem(physicsSys.update.bind(physicsSys));
 }
 
@@ -42,14 +42,14 @@ function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   // Match client entity creation loop exactly
   for (let i = 0; i < 17; i++) {
     // Drop them in a slight staggered stack so they tumble
-    createServerCard(world, physics, { x: 0, y: 2 + i * 0.5, z: 1 });
+    createServerCard(world, physics, { x: 0, y: 2 + i * 0.3, z: 1 });
   }
 }
 
-function setupWebSockets(wss: WebSocketServer, world: GameWorld, slotSys: ServerSlotSystem) {
+function setupWebSockets(wss: WebSocketServer, world: GameWorld, slotSys: ServerSlotSystem, physicsSys: ServerPhysicsSystem) {
   wss.on('connection', (ws) => {
     sendFullState(ws, world);
-    ws.on('message', (data) => handleClientMessage(data, world, slotSys));
+    ws.on('message', (data) => handleClientMessage(data, world, slotSys, physicsSys));
   });
 }
 
@@ -58,7 +58,7 @@ function sendFullState(ws: WebSocket, world: GameWorld) {
   ws.send(JSON.stringify({ type: MessageType.INIT_STATE, payload }));
 }
 
-function handleClientMessage(data: import('ws').RawData, world: GameWorld, slotSys: ServerSlotSystem) {
+function handleClientMessage(data: import('ws').RawData, world: GameWorld, slotSys: ServerSlotSystem, physicsSys: ServerPhysicsSystem) {
   const msg = JSON.parse(data.toString()) as NetworkMessage;
   const payload = msg.payload as ClientActionPayload;
 
@@ -70,6 +70,8 @@ function handleClientMessage(data: import('ws').RawData, world: GameWorld, slotS
     slotSys.handleCardDrop(world.world, payload.eid);
   } else if (msg.type === MessageType.CLIENT_SHUFFLE_SLOT) {
     slotSys.shuffleSlot(payload.eid);
+  } else if (msg.type === MessageType.CLIENT_FLIP_CARD) {
+    physicsSys.flipCard(payload.eid);
   } else if (msg.type === MessageType.CLIENT_MOVE && payload.pos) {
     TransformComponent.position.x[payload.eid] = payload.pos.x;
     TransformComponent.position.y[payload.eid] = payload.pos.y;
