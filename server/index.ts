@@ -19,15 +19,16 @@ async function initServer() {
   const slotSystem = new ServerSlotSystem();
   const physicsSys = new ServerPhysicsSystem(physicsWorld);
 
-  setupServerSystems(gameWorld, physicsSys);
+  setupServerSystems(gameWorld, physicsSys, slotSystem);
   spawnServerEntities(gameWorld, physicsWorld);
   setupWebSockets(wss, gameWorld, slotSystem, physicsSys);
 
   startGameLoop(gameWorld, wss);
 }
 
-function setupServerSystems(world: GameWorld, physicsSys: ServerPhysicsSystem) {
+function setupServerSystems(world: GameWorld, physicsSys: ServerPhysicsSystem, slotSys: ServerSlotSystem) {
   world.addSystem(physicsSys.update.bind(physicsSys));
+  world.addSystem(slotSys.update.bind(slotSys));
 }
 
 function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
