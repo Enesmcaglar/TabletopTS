@@ -49,7 +49,7 @@ function spawnServerEntities(world: GameWorld, physics: RAPIER.World) {
   createServerBox(world, physics, { x: 4, y: 5, z: 0 });
   
   for (let i = 0; i < 17; i++) {
-    createServerCard(world, physics, { x: 0, y: 2 + i * 0.3, z: 0 });
+    createServerCard(world, physics, { x: 0, y: 2 + i * 0.5, z: 0 });
   }
 }
 

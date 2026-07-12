@@ -32,8 +32,8 @@ export function createServerBox(game: GameWorld, phys: RAPIER.World, pos: Positi
 
 export function createServerCard(game: GameWorld, phys: RAPIER.World, pos: Position) {
   const eid = addEntity(game.world);
-  addTransform(game, eid, { x: 0.63, y: 0.01, z: 0.88 });
-  const colDesc = RAPIER.ColliderDesc.cuboid(0.63, 0.01, 0.88);
+  addTransform(game, eid, { x: 0.63, y: 0.03, z: 0.88 });
+  const colDesc = RAPIER.ColliderDesc.cuboid(0.63, 0.03, 0.88);
   addDynamicBody(game, phys, eid, pos, colDesc);
   addComponent(game.world, InteractableComponent, eid);
   addComponent(game.world, CardTag, eid);
